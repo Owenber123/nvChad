@@ -4,8 +4,28 @@ require("nvchad.configs.lspconfig").defaults()
 local lspconfig = require "lspconfig"
 
 -- EXAMPLE
-local servers = { "html", "cssls" }
+local servers = { "html", "cssls", "clangd", "ts_ls", "gopls" }
 local nvlsp = require "nvchad.configs.lspconfig"
+
+require'lspconfig'.rust_analyzer.setup{
+  settings = {
+    ['rust-analyzer'] = {
+      diagnostics = {
+        enable = false;
+      }
+    }
+  }
+}
+local on_attach = nvlsp.on_attach
+local capabilities = nvlsp.capabilities
+
+require'lspconfig'.clangd.setup {
+  on_attach = function(client, bufnr)
+    client.server_capabilities.signatureHelpProvider = false
+    on_attach(client, bufnr)
+  end,
+  capabilities = capabilities
+}
 
 -- lsps with default config
 for _, lsp in ipairs(servers) do
